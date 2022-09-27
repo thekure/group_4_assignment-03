@@ -1,5 +1,4 @@
 namespace Assignment3.Entities;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -14,18 +13,22 @@ public sealed class KanbanContext : DbContext
     {
     }
     
+
     public DbSet<Task> Tasks => Set<Task>();
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<User> Users => Set<User>();
 
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-         modelBuilder
+        modelBuilder
         .Entity<Task>()
         .Property(e => e.State)
         .HasConversion(
             v => v.ToString(),
             v => (State)Enum.Parse(typeof(State), v));
+
 
 
          modelBuilder.Entity<User>()
@@ -41,3 +44,13 @@ public sealed class KanbanContext : DbContext
     }
 
 }
+
+        modelBuilder
+        .Entity<Task>()
+        .HasMany<Tag>(e => e.Tags)
+        .WithMany(e => e.Tasks);
+
+    }
+}
+
+

@@ -34,7 +34,7 @@ public sealed class KanbanContext : DbContext
             .HasMany<Tag>(e => e.Tags)
             .WithMany(e => e.Tasks);
 
-         modelBuilder.Entity<User>()
+        modelBuilder.Entity<User>()
                     .HasIndex(c => c.Email).IsUnique();
         
         modelBuilder.Entity<User>()

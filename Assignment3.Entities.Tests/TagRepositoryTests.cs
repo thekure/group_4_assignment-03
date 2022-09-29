@@ -51,10 +51,6 @@ public class TagRepositoryTests
         response.Should().Be(Response.NotFound);
     }
 
-    /*
-        Cant succesfully test the following endpoint due to issues with TasksRepository 
-        the following test should be correct
-    */
     [Fact]
     public void Delete_Tag_returns_Conflict()
     {

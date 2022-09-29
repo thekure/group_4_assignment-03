@@ -42,6 +42,7 @@ public class TaskRepository : ITaskRepository
                 Tags = convertedTags,
                 User = user,
                 Created = DateTime.Now,
+                State = State.New,
                 StateUpdated = DateTime.Now
             };
              
@@ -70,7 +71,6 @@ public class TaskRepository : ITaskRepository
             switch(task.State){
                 case State.New:
                     _context.Tasks.Remove(task);
-                    _context.SaveChanges();
                     response = Response.Deleted;
                     break;
 
@@ -85,11 +85,13 @@ public class TaskRepository : ITaskRepository
                 case State.Removed:
                     response = Response.Conflict;
                     break;  
+
                 default: 
                     response = Response.BadRequest;
                     break;
             }
         }
+         _context.SaveChanges();
         return response;
     }
 
@@ -102,7 +104,7 @@ public class TaskRepository : ITaskRepository
                         t.Title, 
                         t.Description, 
                         t.Created, 
-                        getAssignedUserName(taskId), 
+                        t.User.Name, 
                         t.Tags.Select(tg => tg.Name).ToList().AsReadOnly(), 
                         t.State,
                         t.StateUpdated
@@ -118,7 +120,7 @@ public class TaskRepository : ITaskRepository
                     select new TaskDTO(
                         t.Id, 
                         t.Title, 
-                        getAssignedUserName(t.Id), 
+                        t.User.Name,
                         t.Tags.Select(tg => tg.Name).ToList().AsReadOnly(), 
                         t.State
                     );
@@ -133,7 +135,7 @@ public class TaskRepository : ITaskRepository
                     select new TaskDTO(
                         t.Id, 
                         t.Title, 
-                        getAssignedUserName(t.Id), 
+                        t.User.Name, 
                         t.Tags.Select(tg => tg.Name).ToList().AsReadOnly(), 
                         t.State
                     );
@@ -148,7 +150,7 @@ public class TaskRepository : ITaskRepository
                     select new TaskDTO(
                         t.Id, 
                         t.Title, 
-                        getAssignedUserName(t.Id), 
+                        t.User.Name,
                         t.Tags.Select(tg => tg.Name).ToList().AsReadOnly(), 
                         t.State
                     );
@@ -163,7 +165,7 @@ public class TaskRepository : ITaskRepository
                     select new TaskDTO(
                         t.Id, 
                         t.Title, 
-                        getAssignedUserName(t.Id), 
+                        t.User.Name, 
                         t.Tags.Select(tg => tg.Name).ToList().AsReadOnly(), 
                         t.State
                     );
@@ -175,14 +177,14 @@ public class TaskRepository : ITaskRepository
     {
          var tasks = from t in _context.Tasks
                     where t.State == State.Removed
+                    orderby t.Title
                     select new TaskDTO(
                         t.Id, 
                         t.Title, 
-                        getAssignedUserName(t.Id), 
+                        t.User.Name,
                         t.Tags.Select(tg => tg.Name).ToList().AsReadOnly(), 
                         t.State
                     );
-
         return tasks.ToArray();
     }
 
@@ -194,6 +196,7 @@ public class TaskRepository : ITaskRepository
         if (entity is null)
         {
             response = Response.NotFound;
+
         }
         else if (_context.Tasks.FirstOrDefault(t => t.Id != task.Id && t.Title == task.Title) != null)
         {
@@ -234,20 +237,4 @@ public class TaskRepository : ITaskRepository
         return response;
     }
     
-
-    private string getAssignedUserName(int taskId){
-        string ?assignedToName;
-        var task =  _context.Tasks
-                    .Where(t => t.Id == taskId)
-                    .FirstOrDefault();
-        
-        
-        var assignedToUser = _context.Users
-                    .Where(u => u.Id == task.AssignedToId)
-                    .FirstOrDefault();
-            
-       
-        assignedToName = assignedToUser.Name ?? null;
-        return assignedToName;
-    }
 }

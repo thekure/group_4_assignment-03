@@ -9,6 +9,8 @@ public class TagRepositoryTests
     private readonly KanbanContext _context;
     private readonly TaskRepository _taskRepository;
     private readonly TagRepository _repository;
+    private readonly UserRepository _userRepository;
+
     public TagRepositoryTests () {
         var connection = new SqliteConnection("Filename=:memory:");
         connection.Open();
@@ -19,6 +21,7 @@ public class TagRepositoryTests
         _context = context;
         _repository = new TagRepository(_context);
         _taskRepository = new TaskRepository(_context);
+        _userRepository = new UserRepository(_context);
     }
    
     [Fact]
@@ -58,23 +61,17 @@ public class TagRepositoryTests
     [Fact]
     public void Delete_Tag_returns_Conflict()
     {
-        // var tag = new Tag {Tasks= new List<Task>(), 
-        //                     Name = "testTasks",
-        //                     Id = 0};
-        
-        // tag.Tasks.Add(new Task { Title="test",
-        //                          });
-        
-        // // _repository.Create();
-        // var testList = new List<string>();
-        // testList.Add("test");
+        var testList = new List<string>();
+        testList.Add("test");
 
-        // var (test, created) = _repository.Create(new TagCreateDTO("A tag"));
-        // var (testTask, testId) = _taskRepository.Create(new TaskCreateDTO ("testTask", null, null, testList));
+        var (userResponse, id) = _userRepository.Create(new UserCreateDTO("name", "hans@gmail.com"));
+        var (test, created) = _repository.Create(new TagCreateDTO("test"));
+        var (testTask, testId) = _taskRepository.Create(new TaskCreateDTO ("testTask", 0, null, testList));
 
-        // var response = _repository.Delete(0);
-       
-        // response.Should().Be(Response.Conflict);
+        var response = _repository.Delete(0);
+
+        response.Should().Be(Response.Conflict);
+    
     }
 
 [Fact]
@@ -116,16 +113,23 @@ public class TagRepositoryTests
     [Fact]
     public void Read_Tag_update_returns_Response_Conflict()
     {
-        // var testTag = new TagUpdateDTO(0, "A tag");
-        // var tag = new Tag{ Id = 1,
-        //                 Name = "A tag"};
+        var testList = new List<string>();
+        testList.Add("test");
 
-        // _context.Add(tag);
-        // _context.SaveChanges();
+        var (userResponse, id) = _userRepository.Create(new UserCreateDTO("name", "hans@gmail.com"));
+        var (test, created) = _repository.Create(new TagCreateDTO("test"));
+        var (testTask, testId) = _taskRepository.Create(new TaskCreateDTO ("testTask", 0, null, testList));
+
+        var testTag = new TagUpdateDTO(0, "A tag");
+        var tag = new Tag{ Id = 1,
+                        Name = "A tag"};
+
+        _context.Add(tag);
+        _context.SaveChanges();
         
-        // var response = _repository.Update(testTag);
+        var response = _repository.Update(testTag);
 
-        // response.Should().Be(Response.Conflict);
+        response.Should().Be(Response.Conflict);
     }
 
 

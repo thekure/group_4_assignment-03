@@ -1,7 +1,6 @@
 namespace Assignment3.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
 using Assignment3.Entities;
 
 
@@ -30,10 +29,13 @@ public sealed class KanbanContext : DbContext
             v => (State)Enum.Parse(typeof(State), v));
 
 
+        modelBuilder
+            .Entity<Task>()
+            .HasMany<Tag>(e => e.Tags)
+            .WithMany(e => e.Tasks);
 
          modelBuilder.Entity<User>()
                     .HasIndex(c => c.Email).IsUnique();
-        
         
         modelBuilder.Entity<User>()
                     .Property(c => c.Name)
@@ -44,13 +46,3 @@ public sealed class KanbanContext : DbContext
     }
 
 }
-
-        modelBuilder
-        .Entity<Task>()
-        .HasMany<Tag>(e => e.Tags)
-        .WithMany(e => e.Tasks);
-
-    }
-}
-
-

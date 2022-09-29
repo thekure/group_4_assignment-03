@@ -19,6 +19,7 @@ public class TaskRepository : ITaskRepository
 
         if (entity is null){
             var convertedTags = new List<Tag>();
+            User user = null;
             foreach (string s in task.Tags){
                 var t = _context.Tags
                     .Where(t => t.Name == s)
@@ -30,12 +31,16 @@ public class TaskRepository : ITaskRepository
                 }
             }
 
-           
+           if(task.AssignedToId != null){
+                    user = _context.Users
+                        .Where(u => u.Id == task.AssignedToId).ToList()[0];
+            } 
 
             entity = new Task(){
                 Title = task.Title, 
                 Description = task.Description, 
                 Tags = convertedTags,
+                User = user,
                 Created = DateTime.Now,
                 StateUpdated = DateTime.Now
             };

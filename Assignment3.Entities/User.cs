@@ -2,10 +2,6 @@ namespace Assignment3.Entities;
 
 public class User
 {
-    public User(){
-        this.Tasks = new HashSet<Task>();
-    }
-
     public int Id {get; set;}
 
     [Required, StringLength(100)]

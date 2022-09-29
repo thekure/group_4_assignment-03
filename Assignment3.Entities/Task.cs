@@ -22,6 +22,9 @@ public class Task
     [Required]
     public State State {get; set; }
 
+    public DateTime Created {get; set;}
+    public DateTime StateUpdated {get; set;}
+
     public virtual ICollection<Tag> Tags { get; set; }
     
     

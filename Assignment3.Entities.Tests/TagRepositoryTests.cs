@@ -98,11 +98,6 @@ public class TagRepositoryTests
         response.Should().Be(Response.NotFound);
     }
 
-
-    /*
-        Cant succesfully test the following endpoint due to issues with TasksRepository 
-        the following test should be correct
-    */
     [Fact]
     public void Read_Tag_update_returns_Response_Conflict()
     {

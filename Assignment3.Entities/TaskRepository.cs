@@ -145,33 +145,35 @@ public class TaskRepository : ITaskRepository
 
     public IReadOnlyCollection<TaskDTO> ReadAllByTag(string tag)
     {
-         var tasks = from t in _context.Tasks
-                    where t.Tags.Select(tg => tg.Name).ToList().Contains(tag)
-                    select new TaskDTO(
+        #pragma warning disable
+         var tasks = _context.Tasks
+                    .Where(t => t.Tags.Select(tg => tg.Name).AsEnumerable().Contains(tag))
+                    .Select(t => new TaskDTO(
                         t.Id, 
                         t.Title, 
                         t.User.Name,
                         t.Tags.Select(tg => tg.Name).ToList().AsReadOnly(), 
                         t.State
-                    );
+                    ));
 
         return tasks.ToArray();
     }
 
     public IReadOnlyCollection<TaskDTO> ReadAllByUser(int userId)
     {
-         var tasks = from t in _context.Tasks
-                    where t.AssignedToId == userId
-                    select new TaskDTO(
+         var tasks = _context.Tasks.Include(u => u.User)
+                    .Where((t => t.UserId == userId))
+                    .Select(t => new TaskDTO(
                         t.Id, 
                         t.Title, 
                         t.User.Name, 
                         t.Tags.Select(tg => tg.Name).ToList().AsReadOnly(), 
                         t.State
-                    );
+                    ));
 
         return tasks.ToArray();
     }
+
 
     public IReadOnlyCollection<TaskDTO> ReadAllRemoved()
     {

@@ -41,6 +41,10 @@ public sealed class KanbanContext : DbContext
                     .Property(c => c.Name)
                     .HasMaxLength(50);
        
+       modelBuilder
+            .Entity<Task>()
+            .HasOne(e => e.User)
+            .WithMany(e => e.Tasks);
      
 
     }
